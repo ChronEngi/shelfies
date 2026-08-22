@@ -1,9 +1,13 @@
 import gi
+import json
 
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 
 from gi.repository import Gtk, Adw
+
+app_version = "0.1"
+shlf_logic = "0.1"
 
 def on_activate(app):
     root = Adw.ApplicationWindow(application=app)
@@ -47,6 +51,7 @@ def on_activate(app):
     # Create button
     open_button = Gtk.Button(label="Open")
     create_button = Gtk.Button(label="Create new")
+    create_button.connect("clicked", on_create)
     open_button.add_css_class("suggested-action")
     box.append(open_button)
     box.append(create_button)
@@ -57,8 +62,46 @@ def on_activate(app):
     root.set_content(toolbar_view)
     root.present()
 
+
+
+def on_create(button):
+    print("Starting the creation...")
+
+    # Get back the root window's root
+    window = button.get_root()
+
+    # Just creating the dialog, not showing jet
+    dialog = Gtk.FileDialog()
+    dialog.set_title("Create a new library")
+    dialog.set_initial_name("library1.shlf")
+
+    dialog.save(window, None, on_save_done)
+
+
+
+def on_save_done(dialog, result):
+    print("Alrighttt I got the location, gonna save")
+
+    try:
+        file = dialog.save_finish(result)
+        path = file.get_path()
+        print("Saving here: ", path)
+
+        # Basic data structure
+        data = {
+            "shlf_logic": shlf_logic,
+            "books": []
+        }
+
+        # Write out the json
+        with open(path, "w") as f:
+            json.dump(data, f, indent=2)
+    
+    except Exception as e:
+        print("Hmmmm, error: ", e)
+
 app = Adw.Application(application_id="com.test.shelfies")
 app.connect('activate', on_activate)
 app.run(None)
 
-print("Hello")
+print("Bye")
