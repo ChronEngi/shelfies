@@ -6,19 +6,22 @@ Shelfies is an app made to mark the status of a book, whatever it's "finished", 
 ## Development roadmap
 - [X] 1. Main page.
 - [X] 2. Create basic json.
-- [ ] 3. Create/Rename a book.
-- [ ] 4. Set/Read books status.
-- [ ] 5. Set/Read books stars.
-- [ ] 6. Delete a book.
+- [X] 3. Create/Rename a book.
+- [X] 4. Set/Read books status.
+- [X] 5. Set/Read books stars.
+- [X] 6. Delete a book.
 - [ ] 7. Open a Shelf by file extention.
 - [ ] 8. Recent shelfs in the main page.
-- [ ] 9. Order books by status.
-- [ ] 10. Help button.
+- [X] 9. Order books by status.
+- [X] 10. Help button.
 - [ ] 11. Not saving popup.
 
 ## .shlf logic
+.shlf is an archive containing info.json and books.json.
+Books have the following info:
 - book name (string)
 - book status (string)
+- custom text (string)
 - book stars (int 0-2)
 
 ## Contributing
