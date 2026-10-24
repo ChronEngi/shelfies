@@ -4,7 +4,7 @@ pub fn load_css() {
         "
 
         /* Fixes the vertical alignment of the text */
-        .add-book-btn label 
+        .pixel-fix-btn label 
         {
             margin-top: 2px;
         }

@@ -10,6 +10,7 @@ use std::{
 mod book_list;
 mod css;
 mod about;
+mod recents;
 
 #[derive(Serialize, Deserialize, Clone)]
 struct Shelf {
@@ -30,7 +31,7 @@ struct Info {
     shlf_logic: String,
 }
 
-const VERSION: &str = "0.2";
+const VERSION: &str = "0.3";
 const SHLF_LOGIC: &str = "2.0";
 const APP_ID: &str = "com.gitlab.Chronengi.shelfies";
 const STATUSES: [&str; 7] = [
@@ -135,6 +136,47 @@ fn build_ui(app: &AdwApplication) {
         .vexpand(true)
         .build();
 
+    //  Recent files menu
+    let recent_box = GtkBox::builder()
+        .orientation(Orientation::Vertical)
+        .spacing(2)
+        .build();
+    let recent_popover = gtk4::Popover::builder().child(&recent_box).build();
+
+    let recent = recents::load();
+    if recent.is_empty() {
+        let empty = Button::builder().label("Empty").sensitive(false).build();
+        empty.add_css_class("flat");
+        recent_box.append(&empty);
+    }
+    for path in recent {
+        let name = std::path::Path::new(&path)
+            .file_name()
+            .unwrap_or_default()
+            .to_string_lossy()
+            .to_string();
+        let item = Button::builder().label(name.as_str()).build();
+        item.add_css_class("flat");
+
+        let window_for_recent = window.clone();
+        let popover_for_recent = recent_popover.clone();
+        item.connect_clicked(move |_| {
+            popover_for_recent.popdown();
+            open_file(&window_for_recent, path.clone());
+        });
+
+        recent_box.add_css_class("pixel-fix-btn");
+        recent_box.add_css_class("flat");
+        recent_box.append(&item);
+    }
+
+    let recent_button = gtk4::MenuButton::builder()
+        .label("Recent")
+        .popover(&recent_popover)
+        .build();
+    recent_button.add_css_class("flat");
+    header.pack_start(&recent_button);
+
     //  Render
     toolbar_view.set_content(Some(&status_page));
     window.set_content(Some(&toolbar_view));
@@ -191,6 +233,7 @@ fn open_file(window: &AdwApplicationWindow, file_path: String) {
 
             if let Ok(file) = dialog.open_future(Some(&window)).await {
                 let path = file.path().unwrap().to_string_lossy().to_string();
+                    
                 open_file(&window, path);
             }
         });
@@ -221,6 +264,9 @@ fn open_file(window: &AdwApplicationWindow, file_path: String) {
     let books: Vec<Book> = serde_json::from_str(&books_content).unwrap();
 
     let mut shelf = Shelf { info, books };
+
+    //  Remember this file as recent
+    recents::add(&file_path);
 
     //  Title
     let short_path = std::path::Path::new(&file_path)
@@ -304,7 +350,7 @@ fn open_file(window: &AdwApplicationWindow, file_path: String) {
         .build();
     let add_book = Button::builder().child(&add_book_content).build();
     add_book.add_css_class("suggested-action");
-    add_book.add_css_class("add-book-btn");
+    add_book.add_css_class("pixel-fix-btn");
     let window_for_add = working_window.clone();
     let store_for_add = store.clone();
     let save_for_add = save.clone();
@@ -537,7 +583,7 @@ fn filter_button() -> DropDown {
         "Reserved"
     ]);
     filter.set_tooltip_text(Some("Filter the book list."));
-    filter.add_css_class("add-book-btn");
+    filter.add_css_class("pixel-fix-btn");
 
     filter.connect_selected_notify(|f| {
         if f.selected() == 0 {

@@ -11,7 +11,7 @@ Shelfies is an app made to mark the status of a book, whatever it's "finished", 
 - [X] 5. Set/Read books stars.
 - [X] 6. Delete a book.
 - [ ] 7. Open a Shelf by file extention.
-- [ ] 8. Recent shelfs in the main page.
+- [X] 8. Recent shelfs in the main page.
 - [X] 9. Order books by status.
 - [X] 10. Help button.
 - [ ] 11. Not saving popup.
