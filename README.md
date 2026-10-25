@@ -14,7 +14,7 @@ Shelfies is an app made to mark the status of a book, whatever it's "finished", 
 - [X] 8. Recent shelfs in the main page.
 - [X] 9. Order books by status.
 - [X] 10. Help button.
-- [ ] 11. Not saving popup.
+- [X] 11. Not saving popup.
 - [ ] 12. Upload an image to the book.
 
 ## .shlf logic
@@ -32,4 +32,4 @@ Feel free to open issues with suggestions, or submit a pull request.
 GPL v3.0
 
 ## Project status
-Not ready yet.
+Almost ready.

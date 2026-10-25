@@ -31,7 +31,7 @@ struct Info {
     shlf_logic: String,
 }
 
-const VERSION: &str = "0.3";
+const VERSION: &str = "0.4";
 const SHLF_LOGIC: &str = "2.0";
 const APP_ID: &str = "com.gitlab.Chronengi.shelfies";
 const STATUSES: [&str; 7] = [
@@ -320,10 +320,11 @@ fn open_file(window: &AdwApplicationWindow, file_path: String) {
     let shelf_for_save = shelf.clone();
     let store_for_save = store.clone();
     let saved_for_click = saved_label.clone();
+    let path_for_save = file_path.clone();
     save.connect_clicked(move |btn| {
         let mut shelf_to_save = shelf_for_save.borrow().clone();
         shelf_to_save.books = book_list::collect_books(&store_for_save);
-        save_file(&window_for_save, false, file_path.clone(), shelf_to_save);
+        save_file(&window_for_save, false, path_for_save.clone(), shelf_to_save);
 
         btn.remove_css_class("suggested-action");
         btn.add_css_class("flat");
@@ -333,6 +334,43 @@ fn open_file(window: &AdwApplicationWindow, file_path: String) {
         gtk4::glib::timeout_add_seconds_local_once(5, move || {
             label.set_visible(false);
         });
+    });
+
+    //  Ask before closing with unsaved changes (unsaved = save button is highlighted)
+    let save_for_close = save.clone();
+    working_window.connect_close_request(move |window| {
+        if !save_for_close.has_css_class("suggested-action") {
+            return gtk4::glib::Propagation::Proceed;
+        }
+
+        let window = window.clone();
+        let save = save_for_close.clone();
+
+        gtk4::glib::spawn_future_local(async move {
+            let dialog = libadwaita::AlertDialog::builder()
+                .heading("Unsaved changes")
+                .body("Do you want to save before closing?")
+                .default_response("save")
+                .close_response("cancel")
+                .build();
+            dialog.add_responses(&[
+                ("cancel", "Cancel"),
+                ("discard", "Discard"),
+                ("save", "Save"),
+            ]);
+            dialog.set_response_appearance("discard", libadwaita::ResponseAppearance::Destructive);
+            dialog.set_response_appearance("save", libadwaita::ResponseAppearance::Suggested);
+
+            match dialog.choose_future(Some(&window)).await.as_str() {
+                "save" => {
+                    save.emit_clicked();
+                    window.close();
+                }
+                "discard" => window.destroy(),
+                _ => {}
+            }
+        });
+        gtk4::glib::Propagation::Stop
     });
 
     let save_box = GtkBox::builder()
