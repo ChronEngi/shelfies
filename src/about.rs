@@ -8,7 +8,7 @@ pub fn show_about(window: &AdwApplicationWindow) {
         .version(VERSION)
         .developer_name("Chronengi")
         .comments("A simple catalog to keep track of your books.")
-        .website("https://gitlab.com/Chronengi/shelfies")
+        .website("https://github.com/ChronEngi/shelfies")
         .license_type(gtk4::License::Gpl30)
         .build();
 
