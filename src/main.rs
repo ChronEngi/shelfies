@@ -31,9 +31,9 @@ struct Info {
     shlf_logic: String,
 }
 
-const VERSION: &str = "0.4";
+const VERSION: &str = "0.4.0";
 const SHLF_LOGIC: &str = "2.0";
-const APP_ID: &str = "com.gitlab.Chronengi.shelfies";
+const APP_ID: &str = "io.github.ChronEngi.shelfies";
 const STATUSES: [&str; 7] = [
     "Undefined",
     "To read",
