@@ -7,10 +7,14 @@ use serde::{Deserialize, Serialize};
 use std::{
     cell::{Cell, RefCell},
     rc::Rc,};
+
+use crate::error::error_fn;
+
 mod book_list;
 mod css;
 mod about;
 mod recents;
+mod error;
 
 #[derive(Serialize, Deserialize, Clone)]
 struct Shelf {
@@ -31,7 +35,7 @@ struct Info {
     shlf_logic: String,
 }
 
-const VERSION: &str = "0.4.0";
+const VERSION: &str = "0.4.1";
 const SHLF_LOGIC: &str = "2.0";
 const APP_ID: &str = "io.github.ChronEngi.shelfies";
 const STATUSES: [&str; 7] = [
@@ -243,8 +247,16 @@ fn open_file(window: &AdwApplicationWindow, file_path: String) {
     //  Checking JSON
     //  Open the archive and read info.json + books.json
     use std::io::Read;
+    
+    // Try to open the file.
+    let file = match std::fs::File::open(&file_path) {
+        Ok(file) => file,
+        Err(e)=> {
+            error_fn(&window, &format!("{e}"));
+            return;
+        }
+    };
 
-    let file = std::fs::File::open(&file_path).unwrap();
     let mut archive = zip::ZipArchive::new(file).unwrap();
 
     let mut info_content = String::new();
@@ -255,12 +267,25 @@ fn open_file(window: &AdwApplicationWindow, file_path: String) {
         .unwrap();
     let info: Info = serde_json::from_str(&info_content).unwrap();
 
+    //  Try to find books.json, send and error otherwise.
+    let mut books_file = match archive.by_name("books.json") {
+        Ok(file) => file,
+        Err(e) => {
+            error_fn(&window, &format!("{e}. The archive is corrupted!"));
+            return;
+        }
+    };
+
+    //  Try to read books.json's content, send and error otherwise.
     let mut books_content = String::new();
-    archive
-        .by_name("books.json")
-        .unwrap()
-        .read_to_string(&mut books_content)
-        .unwrap();
+    match books_file.read_to_string(&mut books_content) {
+        Ok(_) => {},
+        Err(e) => {
+            error_fn(&window, &format!("{e}"));
+            return;
+        }
+    }
+
     let books: Vec<Book> = serde_json::from_str(&books_content).unwrap();
 
     let mut shelf = Shelf { info, books };
