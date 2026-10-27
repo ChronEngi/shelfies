@@ -510,7 +510,7 @@ fn book_dialog(
     list.append(&custom_row);
 
     //  Stars
-    let initial_stars = editing_book.as_ref().map(|b| b.stars).unwrap_or(1);
+    let initial_stars = editing_book.as_ref().map(|b| b.stars).unwrap_or(0);
     let stars = Rc::new(Cell::new(initial_stars));
     let stars_box = GtkBox::builder()
         .orientation(Orientation::Horizontal)
