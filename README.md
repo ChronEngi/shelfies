@@ -1,7 +1,7 @@
 # Shelfies
 
 ## Description
-Shelfies is an app made to mark the status of a book, whatever it's "finished", "not yet started", "to buy", "sold" and a custom text if you want, like the page you left it over. Also you can give a stars to the book.
+Shelfies is an app made to mark the status of a book, whatever it's "finished", "not yet started", "to buy", "sold", "reserved" and a custom text if you want, like the page you left it over. Also you can give a stars to the book.
 
 ## Development roadmap
 - [X] 1. Main page.
