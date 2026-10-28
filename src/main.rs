@@ -536,9 +536,16 @@ fn book_dialog(
         let stars = stars.clone();
         let all = star_buttons.clone();
         star.connect_clicked(move |_| {
-            stars.set(i as u8 + 1);
+
+            //  If you click the same active stars, reset, otherwise increment
+            if stars.get() == i as u8 + 1{
+                stars.set(0);
+            } else {
+                stars.set(i as u8 + 1);
+            }
+
             for (j, s) in all.iter().enumerate() {
-                s.set_icon_name(if j <= i {
+                s.set_icon_name(if (j as u8) < stars.get() {
                     "starred-symbolic"
                 } else {
                     "non-starred-symbolic"
