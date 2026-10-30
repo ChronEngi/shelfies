@@ -405,7 +405,7 @@ fn open_file(window: &AdwApplicationWindow, file_path: String) {
     save_box.append(&save);
     save_box.append(&saved_label);
 
-    // ---- ADD BOOK (main action) ----
+    // ---- Add Book (main action) ----
     let add_book_content = ButtonContent::builder()
         .label("Add book")
         .icon_name("list-add-symbolic")
@@ -426,7 +426,7 @@ fn open_file(window: &AdwApplicationWindow, file_path: String) {
         );
     });
 
-    // ---- FILTER ----
+    // ---- Filter ----
     let filter = filter_button();
 
     // ---- ABOUT ----
@@ -470,7 +470,7 @@ fn open_file(window: &AdwApplicationWindow, file_path: String) {
     window.close();
 }
 
-//  editing = None: add a new book. editing = Some(book): edit that book.
+//  Editing = None: add a new book. Editing = Some(book): edit that book.
 fn book_dialog(
     window: &AdwApplicationWindow,
     store: gtk4::gio::ListStore,
