@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use std::{
     cell::{Cell, RefCell},
     rc::Rc,};
+use gtk4::{gdk, glib};
 
 use crate::error::error_fn;
 
@@ -35,7 +36,7 @@ struct Info {
     shlf_logic: String,
 }
 
-const VERSION: &str = "0.4.1";
+const VERSION: &str = "0.4.2";
 const SHLF_LOGIC: &str = "2.0";
 const APP_ID: &str = "io.github.ChronEngi.shelfies";
 const STATUSES: [&str; 7] = [
@@ -131,9 +132,14 @@ fn build_ui(app: &AdwApplication) {
     button_box.append(&open_button);
     button_box.append(&new_button);
 
+    let icon = gdk::Texture::from_bytes(&glib::Bytes::from_static(include_bytes!(
+        "../icon.png"
+    )))
+    .expect("icon.png non valid");
+
     //  Welcome page: icon + title + description + buttons
     let status_page = StatusPage::builder()
-        .icon_name("accessories-dictionary-symbolic")
+        .paintable(&icon)
         .title("Shelfies")
         .description("Open a library or create a new one.")
         .child(&button_box)
@@ -225,6 +231,10 @@ fn save_file(window: &AdwApplicationWindow, is_new_file: bool, file_path: String
     zip.write_all(books_json.as_bytes()).unwrap();
     zip.finish().unwrap();
     println!("Saved to: {}", file_path);
+
+    if is_new_file == true {
+        open_file(window,file_path);
+    }
 }
 
 fn open_file(window: &AdwApplicationWindow, file_path: String) {
