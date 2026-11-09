@@ -232,6 +232,7 @@ fn save_file(window: &AdwApplicationWindow, is_new_file: bool, file_path: String
     zip.finish().unwrap();
     println!("Saved to: {}", file_path);
 
+    //  If the file is new, it will be open automatically
     if is_new_file == true {
         open_file(window,file_path);
     }
